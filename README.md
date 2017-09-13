@@ -2,10 +2,13 @@
 
 Prefix / prepend a string to CLI command output
 
-Sometimes in long-running output of a CLI command I want to prefix every line with a string.
+## About
+
+Sometimes in long-running output of a CLI command I want to prefix every line with a string.  
 For example, timestamps on lines of a system update, timestamps on lines of a deploy, or the name of the current task being run in a list of tasks.
 
-There is not an existing simple tool or one-liner I could find to do this already. The sed/awk/perl/ruby one-liners like ` | sed "s/^/$PREFIX /"` break down on progress bars made with carriage return.
+There is not an existing simple tool or one-liner I could find to do this already.  
+The sed/awk/perl/ruby one-liners like ` | sed "s/^/$PREFIX /"` break down on progress bars made with carriage return.
 
 prefixcli partially solves the progress bar problem because it properly handles `\r`.
 
