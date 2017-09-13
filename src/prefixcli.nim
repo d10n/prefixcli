@@ -131,7 +131,7 @@ var lastByteWasLf = true
 
 var bytesRead: int
 
-# nim can't handle while bytesRead = stdin.read(..) != 0
+# nim can't handle while (bytesRead = stdin.read(..)) != 0
 bytesRead = stdin.read(buffer[0].addr, bufferSize)
 # while not stdin.endOfFile: # does not work with read()
 while bytesRead != 0:
