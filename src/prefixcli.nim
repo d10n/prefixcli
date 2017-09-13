@@ -1,6 +1,10 @@
 # setStdIoUnbuffered() # doesn't affect readBuffer and slows down read
 {.deadCodeElim: on.} # the binary got huge, so adding this just to be safe
 
+import strutils
+import docopt
+import osproc
+
 
 # proc c_setvbuf(f: File, buf: pointer, mode: cint, size: csize): cint {.
 #   importc: "setvbuf", header: "<stdio.h>", tags: [].}
@@ -79,9 +83,6 @@ Examples:
   pacman -Syu | prefixcli --eval 'date +%s'
 """
 
-import strutils
-import docopt
-
 let args = docopt(doc, version = "Prefix CLI 0.1")
 # echo args
 
@@ -110,7 +111,6 @@ prefix.add(separator)
 # var originalTtySize = execProcess("tput cols").string
 # system.addQuitProc(resetAttributes)
 
-import osproc
 let eval = args["--eval"].to_bool
 
 # import os
