@@ -11,11 +11,6 @@ prefixcli partially solves the progress bar problem because it properly handles 
 
 The source has ugly comments while I figure nim stuff out.
 
-## Caveats
-
-When a CLI progress bar is programmed to fill all columns of the tty, prefixcli overflows the line, causing a new line to be rendered for each update to the progress bar. This could be fixed by altering the tty width (use isatty, ioctl, TIOCGWINSZ, ITOCSWINSZ or shell out to stty)
-https://nim-lang.org/docs/terminal.html#TerminalCmd
-
 ## Performance
 
     user@host:~/code/prefixcli
@@ -37,11 +32,6 @@ Manual testing for now:
     ./scripts/generate-test-output.sh | ./bin/prefixcli --sep=' : '
     ./scripts/generate-test-output.sh | ./bin/prefixcli --eval 'HI=hi; echo $HI'
     ./scripts/generate-test-output.sh | pv --rate-limit=3 --quiet | ./bin/prefixcli
-
-## TODO
-
-* Suppress traceback on SIGINT etc.
-* Address tty caveat
 
 ## Alternatives
 
