@@ -19,6 +19,33 @@ The source has ugly comments while I figure nim stuff out.
  * Lines on stderr are ignored (not prefixed) by default.  
    **Workaround**: If you want to prefix every line, redirect stderr to stdout with `2>&1` like in the example below
 
+## Example output
+
+    root@host:~
+    # unbuffer pacman -Syy | prefixcli --eval 'date -u +%Y-%m-%dT%H:%M:%S%z'
+    2017-09-13T02:32:18+0000 :: Synchronizing package databases...
+    2017-09-13T02:32:18+0000  core                     124.4 KiB  2.43M/s 00:00 [#####] 100%
+    2017-09-13T02:32:19+0000  extra                   1650.1 KiB  4.88M/s 00:00 [#####] 100%
+    2017-09-13T02:32:20+0000  community                  4.0 MiB  6.88M/s 00:01 [#####] 100%
+
+    user@host:~/temp
+    $ ls
+    bar/  baz/  foo/
+    user@host:~/temp
+    $ for dir in *; do pushd -q $dir; curl -# httpbin.org/uuid 2>&1 | tee uuid | prefixcli $dir; popd -q; done
+    bar ######################################################################## 100.0%
+    bar {
+    bar   "uuid": "040c53d6-5076-45d1-95aa-419e3bb84a7f"
+    bar }
+    baz ######################################################################## 100.0%
+    baz {
+    baz   "uuid": "72d64574-21e8-4b98-81b8-86c4e67b6026"
+    baz }
+    foo ######################################################################## 100.0%
+    foo {
+    foo   "uuid": "9a88e474-bb35-4fe3-b0ab-5c430bebfc15"
+    foo }
+
 ## Performance
 
     user@host:~/code/prefixcli
