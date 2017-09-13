@@ -16,5 +16,8 @@ requires "docopt >= 0.6.5"
 
 task package, "Prepare for release":
     exec "nimble build"
-    exec "strip -s bin/prefixcli"
-    # exec "upx --best bin/prefixcli"
+    if hostOS == "macosx":
+        exec "strip bin/prefixcli"
+    else:
+        exec "strip -s bin/prefixcli"
+    exec "upx --best bin/prefixcli"
