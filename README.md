@@ -28,6 +28,16 @@ The source has ugly comments while I figure nim stuff out.
     $ timeout 5 yes | ./bin/prefixcli | pv -a >/dev/null
     [58.8MiB/s]
 
+## Compiling / building
+
+Run `nimble build`.
+
+A Dockerfile is provided for easy repeatable statically linked Linux builds:
+
+    docker build -t prefixcli .
+    docker run --rm -v "$PWD":/usr/src/app prefixcli
+    ls -l ./bin/prefixcli
+
 ## Testing
 
 Manual testing for now:
