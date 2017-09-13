@@ -9,6 +9,8 @@ import docopt
 import osproc
 import sequtils
 
+setControlCHook(proc(){.noconv.} = discard)
+
 
 # proc c_setvbuf(f: File, buf: pointer, mode: cint, size: csize): cint {.
 #   importc: "setvbuf", header: "<stdio.h>", tags: [].}
