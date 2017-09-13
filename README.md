@@ -11,6 +11,14 @@ prefixcli partially solves the progress bar problem because it properly handles 
 
 The source has ugly comments while I figure nim stuff out.
 
+## Caveats / TODO
+
+ * Some progress bars get disabled because there is no pty.  
+   Make a pty to handle those. (posix_openpt)  
+   **Workaround**: Use `unbuffer` (part of the `expect` package) like in the example below
+ * Lines on stderr are ignored (not prefixed) by default.  
+   **Workaround**: If you want to prefix every line, redirect stderr to stdout with `2>&1` like in the example below
+
 ## Performance
 
     user@host:~/code/prefixcli
