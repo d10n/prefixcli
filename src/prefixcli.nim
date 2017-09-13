@@ -59,7 +59,7 @@ proc read(f: File, buffer: pointer, len: Natural): int =
   if result != len: checkErr(f)
 {.pop.}
 
-let doc = """
+const doc = """
 Prefix CLI program output lines with a string.
 
 Usage:
