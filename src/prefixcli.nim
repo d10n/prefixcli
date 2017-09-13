@@ -126,11 +126,8 @@ let eval = args["--eval"].to_bool
 const bufferSize = 8192 # works with c_read but not c_fread or readBuffer!
 # const bufferSize = 1 # works with c_fread and readBuffer but slow!
 var buffer = newString(bufferSize)
-
 var lastByteWasLf = true
-
 var bytesRead: int
-
 # nim can't handle while (bytesRead = stdin.read(..)) != 0
 bytesRead = stdin.read(buffer[0].addr, bufferSize)
 # while not stdin.endOfFile: # does not work with read()
