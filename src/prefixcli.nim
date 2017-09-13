@@ -1,7 +1,6 @@
 # setStdIoUnbuffered() # doesn't affect readBuffer and slows down read
 {.deadCodeElim: on.} # the binary got huge, so adding this just to be safe
 
-# {.link: "/usr/lib/libpcre.a" .}
 
 # proc c_setvbuf(f: File, buf: pointer, mode: cint, size: csize): cint {.
 #   importc: "setvbuf", header: "<stdio.h>", tags: [].}
