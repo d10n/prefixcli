@@ -2,7 +2,7 @@
 (
 line() {
     printf "$1"
-    perl -e 'select(undef, undef, undef, 0.5)'
+    perl -e 'select(undef, undef, undef, 0.25)'
 }
 line "\n"
 line 'h'
