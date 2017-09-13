@@ -18,9 +18,7 @@ The source has ugly comments while I figure nim stuff out.
     [5.74GiB/s]
     user@host:~/code/prefixcli
     $ timeout 5 yes | ./bin/prefixcli | pv -a >/dev/null
-    [28.2MiB/s]
-    user@host:~/code/prefixcli
-    $
+    [58.8MiB/s]
 
 ## Testing
 
