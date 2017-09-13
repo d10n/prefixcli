@@ -1,9 +1,13 @@
 # setStdIoUnbuffered() # doesn't affect readBuffer and slows down read
 {.deadCodeElim: on.} # the binary got huge, so adding this just to be safe
 
+import posix
+import posix/termios
+import terminal
 import strutils
 import docopt
 import osproc
+import sequtils
 
 
 # proc c_setvbuf(f: File, buf: pointer, mode: cint, size: csize): cint {.
@@ -13,6 +17,7 @@ import osproc
 
 type cssize* {.importc: "ssize_t", nodecl.} = int # size_t is supposed to be uint but it isn't!
 
+var TIOCSWINSZ* {.importc, header: "<sys/ioctl.h>".}: cuint
 
 # Ripped from sysio:
 # when not declared(sysFatal):
@@ -101,20 +106,42 @@ else:
 
 prefix.add(separator)
 
-
-# TODO: handle tty width
-# 1. Get the tty width
-# 2. Set the tty width smaller by prefix.len cols
-# 3. On each read loop, if the tty width is different,
-#    the terminal was resized. Recalculate tty width and set.
-# 4. On exit, reset tty width.
-# var originalTtySize = execProcess("tput cols").string
-# system.addQuitProc(resetAttributes)
-
 let eval = args["--eval"].to_bool
 
-# import os
+proc setTerminalSize(width: int, height: int):int =
+  var winSize = IOctl_WinSize(ws_row: height.cushort, ws_col: width.cushort)
+  result = ioctl(stdout.getFileHandle, TIOCSWINSZ, addr winsize)
 
+
+var originalTerminalWidth:int
+var finalTerminalWidth:int
+var lastTerminalWidth:int
+var currentTerminalWidth:int
+var lastTerminalHeight:int
+
+let inTty = any(@[stdin, stdout, stderr], proc(x:File):bool = x.isatty)
+if inTty:
+  lastTerminalHeight = terminalHeight()
+  originalTerminalWidth = terminalWidth()
+  finalTerminalWidth = originalTerminalWidth
+  system.addQuitProc(proc(){.noconv.} =
+    discard setTerminalSize(finalTerminalWidth, lastTerminalHeight)
+    resetAttributes())
+
+  if eval:
+    # calculate the prefix once now
+    # and assume that the prefix length will remain the same
+    # to reserve enough space
+    prefix = execProcess("sh", ["-c", $args["<prefix>"]], options={
+      poUsePath, poStdErrToStdOut
+    })
+    prefix.removeSuffix('\l')
+    prefix.add(separator)
+
+  discard setTerminalSize(originalTerminalWidth - prefix.len, lastTerminalHeight)
+  lastTerminalWidth = terminalWidth()
+
+# import os
 # var prefix:string
 # if paramCount() > 0:
 #   prefix = paramStr(1)
@@ -132,6 +159,16 @@ var bytesRead: int
 bytesRead = stdin.read(buffer[0].addr, bufferSize)
 # while not stdin.endOfFile: # does not work with read()
 while bytesRead != 0:
+  if inTty:
+    currentTerminalWidth = terminalWidth()
+    lastTerminalHeight = terminalHeight()
+    if currentTerminalWidth != lastTerminalWidth:
+      finalTerminalWidth = currentTerminalWidth
+      # assume window resized and the width is accurate
+      discard setTerminalSize(currentTerminalWidth - prefix.len, lastTerminalHeight)
+      currentTerminalWidth = terminalWidth()
+      lastTerminalWidth = currentTerminalWidth
+
   # echo "reading stdin"
   # let bytesRead = stdin.read(buffer[0].addr, bufferSize)
   # let bytesRead = stdin.readBuffer(buffer[0].addr, bufferSize)
