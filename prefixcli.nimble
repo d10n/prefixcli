@@ -21,3 +21,7 @@ task package, "Prepare for release":
     else:
         exec "strip -s bin/prefixcli"
     exec "upx --best bin/prefixcli"
+
+task docker, "Build a static Linux binary with the Dockerfile":
+    exec "docker build -t prefixcli ."
+    exec "docker run --rm -v '" & thisDir() & "':/usr/src/app prefixcli"
