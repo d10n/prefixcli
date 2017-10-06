@@ -109,6 +109,7 @@ else:
 prefix.add(separator)
 
 let eval = args["--eval"].to_bool
+var lastEvalLength = 0
 
 proc setTerminalSize(width: int, height: int):int =
   var winSize = IOctl_WinSize(ws_row: height.cushort, ws_col: width.cushort)
@@ -131,14 +132,8 @@ if inTty:
     resetAttributes())
 
   if eval:
-    # calculate the prefix once now
-    # and assume that the prefix length will remain the same
-    # to reserve enough space
-    prefix = execProcess("sh", ["-c", $args["<prefix>"]], options={
-      poUsePath, poStdErrToStdOut
-    })
-    prefix.removeSuffix('\l')
-    prefix.add(separator)
+    prefix = ""
+    lastEvalLength = prefix.len
 
   discard setTerminalSize(originalTerminalWidth - prefix.len, lastTerminalHeight)
   lastTerminalWidth = terminalWidth()
@@ -161,20 +156,6 @@ var bytesRead: int
 bytesRead = stdin.read(buffer[0].addr, bufferSize)
 # while not stdin.endOfFile: # does not work with read()
 while bytesRead != 0:
-  if inTty:
-    currentTerminalWidth = terminalWidth()
-    lastTerminalHeight = terminalHeight()
-    if currentTerminalWidth != lastTerminalWidth:
-      finalTerminalWidth = currentTerminalWidth
-      # assume window resized and the width is accurate
-      discard setTerminalSize(currentTerminalWidth - prefix.len, lastTerminalHeight)
-      currentTerminalWidth = terminalWidth()
-      lastTerminalWidth = currentTerminalWidth
-
-  # echo "reading stdin"
-  # let bytesRead = stdin.read(buffer[0].addr, bufferSize)
-  # let bytesRead = stdin.readBuffer(buffer[0].addr, bufferSize)
-
   if eval:
     prefix = execProcess("sh", ["-c", $args["<prefix>"]], options={
       poUsePath, poStdErrToStdOut
@@ -182,7 +163,25 @@ while bytesRead != 0:
     prefix.removeSuffix('\l')
     prefix.add(separator)
 
-  var start = 0;
+  if inTty:
+    currentTerminalWidth = terminalWidth()
+    lastTerminalHeight = terminalHeight()
+    let evalLengthChanged = lastEvalLength != prefix.len
+    let windowResized = currentTerminalWidth != lastTerminalWidth
+    if windowResized or evalLengthChanged:
+      if windowResized:
+        # assume window resized and the width is accurate
+        finalTerminalWidth = currentTerminalWidth
+      discard setTerminalSize(currentTerminalWidth + lastEvalLength - prefix.len, lastTerminalHeight)
+      currentTerminalWidth = terminalWidth()
+      lastTerminalWidth = currentTerminalWidth
+      lastEvalLength = prefix.len
+
+  # echo "reading stdin"
+  # let bytesRead = stdin.read(buffer[0].addr, bufferSize)
+  # let bytesRead = stdin.readBuffer(buffer[0].addr, bufferSize)
+
+  var start = 0
   if lastByteWasLf:
     stdout.write(prefix)
   for i in 0 .. <bytesRead:
