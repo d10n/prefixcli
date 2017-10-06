@@ -93,10 +93,8 @@ The source has ugly comments while I figure nim stuff out.
 
 ## Performance
 
-    user@host:~/code/prefixcli
     $ timeout 5 yes | pv -a >/dev/null
     [5.74GiB/s]
-    user@host:~/code/prefixcli
     $ timeout 5 yes | ./bin/prefixcli | pv -a >/dev/null
     [58.8MiB/s]
 
