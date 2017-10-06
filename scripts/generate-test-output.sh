@@ -20,25 +20,27 @@ line "\rfoo"
 line "\rfoobar\n"
 line "fooobar\n"
 
-progressline() {
-    width=$(tput cols)
-    percent="$1"
-    filled=$(( width * percent / 100 ))
-    remainder=$(( width - filled ))
-    perl -e 'printf("\r"."#" x $ARGV[0] . "-" x $ARGV[1]);
-        select(undef, undef, undef, 0.25)' $filled $remainder
+progressbar1() {
+    for i in $(seq 0 10 100); do
+        percent="$i"
+        width=$(( $(tput cols) - 6 ))
+        filled=$(( width * percent / 100 ))
+        remainder=$(( width - filled ))
+        perl -e 'printf("\r"."#" x $ARGV[0] . "-" x $ARGV[1] . $ARGV[2]);
+            select(undef, undef, undef, 0.25)' $filled $remainder "$(printf ' %3d%%' $percent)"
+    done
+    printf "\n"
 }
-printf "\n"
-progressline 0
-progressline 10
-progressline 20
-progressline 30
-progressline 40
-progressline 50
-progressline 60
-progressline 70
-progressline 80
-progressline 90
-progressline 100
+progressbar2() {
+    line "::::::::::\r"
+    for i in $(seq 10); do
+        line '#'
+    done
+    printf "\n"
+}
+printf "Progress bar type 1:\n"
+progressbar1
+printf "Progress bar type 2:\n"
+progressbar2
 printf "\n"
 )
