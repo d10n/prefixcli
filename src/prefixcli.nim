@@ -87,7 +87,7 @@ Options:
   --version   Show version
 
 Examples:
-  pacman -Syu | prefixcli --eval 'date +%s'
+  tcpdump -i any 'tcp port 443' | prefixcli --eval 'date +%s'
 """
 
 let args = docopt(doc, version = "Prefix CLI 0.1")
