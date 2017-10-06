@@ -101,9 +101,18 @@ The source has ugly comments while I figure nim stuff out.
 ## Compiling / building
 
  * Regular compilation:
-    * `nimble build`
+    * ```
+      nimble build
+      ```
  * A Dockerfile is provided for easy repeatable statically linked Linux builds:
-    * `nimble docker`
+    * ```
+      nimble docker
+      ```
+    * ```
+      docker build -t prefixcli .
+      docker run --rm -v "$PWD":/usr/src/app prefixcli
+      ls -l ./bin/prefixcli
+      ```
 
 ## Testing
 
