@@ -11,8 +11,8 @@ binDir = "bin"
 
 # Dependencies
 
-requires "nim >= 0.17.0"
-requires "docopt >= 0.6.5"
+requires "nim >= 1.2.0"
+requires "docopt >= 0.6.8"
 
 task package, "Prepare for release":
     exec "nimble build"

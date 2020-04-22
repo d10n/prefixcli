@@ -49,7 +49,7 @@ var TIOCSWINSZ* {.importc, header: "<sys/ioctl.h>".}: cuint
 # include system/sysio # to get checkErr
 
 {.push stackTrace:off, profiler:off.}
-proc c_read(filedes: cint, buf: pointer, n: csize): cssize {.
+proc c_read(filedes: cint, buf: pointer, n: csize_t): cssize {.
   importc: "read", header: "<stdio.h>", tags: [ReadIOEffect].}
 proc c_ferror(f: File): cint {.
   importc: "ferror", header: "<stdio.h>", tags: [].}
@@ -66,7 +66,7 @@ proc checkErr(f: File) =
     raiseEIO("Unknown IO Error")
 
 proc read(f: File, buffer: pointer, len: Natural): int =
-  result = c_read(f.getFileHandle, buffer, len)
+  result = c_read(f.getFileHandle, buffer, csize_t(len))
   if result != len: checkErr(f)
 {.pop.}
 
@@ -157,7 +157,7 @@ bytesRead = stdin.read(buffer[0].addr, bufferSize)
 # while not stdin.endOfFile: # does not work with read()
 while bytesRead != 0:
   if eval:
-    prefix = execProcess("sh", ["-c", $args["<prefix>"]], options={
+    prefix = execProcess("sh", args=["-c", $args["<prefix>"]], options={
       poUsePath, poStdErrToStdOut
     })
     prefix.removeSuffix('\l')
@@ -184,7 +184,7 @@ while bytesRead != 0:
   var start = 0
   if lastByteWasLf:
     stdout.write(prefix)
-  for i in 0 .. <bytesRead:
+  for i in 0..<bytesRead:
     # skip last \l because there might not be text on the new line to prefix
     if (i != bytesRead - 1 and buffer[i] == '\l') or (buffer[i] == '\r'):
       let length = i - start + 1
